@@ -18,10 +18,8 @@ double time_quick_sort_tasks(double *arr, int size, int cutoff)
     double start = omp_get_wtime();
     #pragma omp parallel
     {
-        #pragma omp single //nowait
-        {
-            quick_sort_tasks(arr, 0, size-1, cutoff);
-        }
+        #pragma omp single
+        quick_sort_tasks(arr, 0, size-1, cutoff);
     }
     double end = omp_get_wtime();
 
@@ -64,7 +62,11 @@ double time_merge_sort_serial(double *arr, double *temp, int size)
 double time_merge_sort_tasks(double *arr, double *temp, int size, int cutoff)
 {
     double start = omp_get_wtime();
-    merge_sort_tasks(arr, temp, size, cutoff); 
+    #pragma omp parallel
+    {
+        #pragma omp single
+        merge_sort_tasks(arr, temp, size, cutoff);
+    }   
     double end = omp_get_wtime();
 
     printf("Tasking merge sort in %12.10fs. \n", end - start);

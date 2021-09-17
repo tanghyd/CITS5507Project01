@@ -1,5 +1,7 @@
 #include "merge_sort.h"
 
+
+
 /* last-element partition function */
 void merge(double *arr, double *temp, int size)
 {
@@ -10,7 +12,7 @@ void merge(double *arr, double *temp, int size)
     int n = 0;
 
     // loop if both subarrays have elements
-    while ((i < (size/2)) && (j < size))
+    while (i<(size/2) && j<size)
     {
         // add smaller element to temp array
         if (arr[j] > arr[i])
@@ -62,7 +64,6 @@ void merge_sort(double *arr, double *temp, int size)
     merge(arr, temp, size);
 }
 
-
 // computes merge sort algorithm on sub-array
 // defined on the interval arr[low:high]
 void merge_sort_tasks(double *arr, double *temp, int size, int cutoff)
@@ -70,33 +71,55 @@ void merge_sort_tasks(double *arr, double *temp, int size, int cutoff)
     if (size < 2)
         return;
 
-    if (size > cutoff)
-    {
-        #pragma omp parallel
-        {
-            #pragma omp single nowait
-            {
-                // recursively sort subarrays
-                // select sub-arrays by incrementing pointer positions
-                #pragma omp task shared(arr, temp) // if (size > cutoff)
-                merge_sort_tasks(arr, temp, size/2, cutoff);
+    // recursively sort subarrays
+    // select sub-arrays by incrementing pointer positions
+    #pragma omp task shared(arr, temp) if (size > cutoff)
+    merge_sort_tasks(arr, temp, size/2, cutoff);
 
-                #pragma omp task shared(arr, temp) // if (size > cutoff)
-                merge_sort_tasks(arr + (size/2), temp + (size/2), size - (size/2), cutoff);
+    #pragma omp task shared(arr, temp) if (size > cutoff)
+    merge_sort_tasks(arr + (size/2), temp + (size/2), size - (size/2), cutoff);
 
-                #pragma omp taskwait
-                merge(arr, temp, size);
-            }
-        }
-    }
-    else
-    {
-        // else serial implementation
-        merge_sort(arr, temp, size/2);
-        merge_sort(arr + (size/2), temp + (size/2), size - (size/2));
-        merge(arr, temp, size);
-    }
+    #pragma omp taskwait
+    merge(arr, temp, size);
+
 }
+
+
+
+// computes merge sort algorithm on sub-array
+// defined on the interval arr[low:high]
+// void merge_sort_hybrid_tasks(double *arr, double *temp, int size, int cutoff)
+// {
+//     if (size < 2)
+//         return;
+
+//     if (size > cutoff)
+//     {
+//         #pragma omp parallel
+//         {
+//             #pragma omp single nowait
+//             {
+//                 // recursively sort subarrays
+//                 // select sub-arrays by incrementing pointer positions
+//                 #pragma omp task shared(arr, temp) // if (size > cutoff)
+//                 merge_sort_tasks(arr, temp, size/2, cutoff);
+
+//                 #pragma omp task shared(arr, temp) // if (size > cutoff)
+//                 merge_sort_tasks(arr + (size/2), temp + (size/2), size - (size/2), cutoff);
+
+//                 #pragma omp taskwait
+//                 merge(arr, temp, size);
+//             }
+//         }
+//     }
+//     else
+//     {
+//         // else serial implementation
+//         merge_sort(arr, temp, size/2);
+//         merge_sort(arr + (size/2), temp + (size/2), size - (size/2));
+//         merge(arr, temp, size);
+//     }
+// }
 
 
 void merge_sort_sections(double *arr, double *temp, int size, int cutoff)
@@ -107,7 +130,8 @@ void merge_sort_sections(double *arr, double *temp, int size, int cutoff)
     if (size > cutoff)
     {
         // recursively sort subarrays
-        #pragma omp parallel sections shared(arr, temp)
+        #pragma omp parallel shared(arr, temp)
+        #pragma omp sections
         {
             #pragma omp section
             {

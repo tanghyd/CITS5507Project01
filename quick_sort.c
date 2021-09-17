@@ -15,11 +15,11 @@ void swap(double *a, double *b)
 /* last-element partition function */
 int partition (double *arr, int low, int high)
 {
-    double pivot = arr[high];  // (final) element to pivot on
-    int i = low - 1; // Index of smaller element the right position of pivot found so far
+    double pivot = arr[high];
+    int i = low - 1;
 
     // loop through partitioned array indices
-    for (int j = low; j <= high - 1; j++)
+    for (int j = low; j < high; j++)
     {
         // if current element is smaller than the pivot
         if (arr[j] < pivot)
@@ -95,7 +95,8 @@ void quick_sort_sections(double *arr, int low, int high, int cutoff)
         if (high - low > cutoff)
         {
             // array large enough to warrant parallelism
-            #pragma omp parallel sections
+            #pragma omp parallel shared(arr)
+            #pragma omp sections
             {
                 #pragma omp section
                 {

@@ -13,5 +13,6 @@ void merge_sort(double *arr, double *temp, int size);
 // parallel (with hybrid cutoff)
 void merge_sort_tasks(double *arr, double *temp, int size, int cutoff);
 void merge_sort_sections(double *arr, double *temp, int size, int cutoff);
+// void merge_sort_hybrid_tasks(double *arr, double *temp, int size, int cutoff);
 
 #endif

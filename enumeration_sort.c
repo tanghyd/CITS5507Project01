@@ -28,7 +28,7 @@ void enumeration_sort_parallel(double arr[], double temp[], int size)
 {
     // compare each element against other elements in parallel
     // rank is how many other elements it is greater than
-    #pragma omp parallel for shared(arr, temp)
+    #pragma omp parallel for shared(arr, temp) schedule(guided)
     for (int i = 0; i < size; i++)
     {
         int rank = 0;
@@ -42,10 +42,4 @@ void enumeration_sort_parallel(double arr[], double temp[], int size)
 
     // copy temp array into main array
     memcpy(arr, temp, size*sizeof(double));
-
-    // double *addr;
-    // addr = &arr;
-    // &arr = &temp;
-    // &temp = addr;
-
 }

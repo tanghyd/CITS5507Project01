@@ -16,31 +16,40 @@
 
 int main(void)
 {
-    // disable dynamic thread teams
-    // omp_set_dynamic(0);  
+    // // disable dynamic thread teams
+    omp_set_dynamic(0);
 
     // random seed init -- call only once
     srand(time(NULL));
     // srand(42);
 
-    double run_start = omp_get_wtime();
+    // test run    
+    // int n_arrays = 1;
+    // int n_cutoffs = 1;
+    // int ARRAY_SIZES[1] = {10000000};
+    // int CUT_OFFS[1] = {100};
 
-    int ARRAY_SIZES[5] = {1000, 10000, 100000, 1000000, 10000000};
-    int CUT_OFFS[3] = {0, 100, 1000};  // min array size to run parallelism
+    // full run
+    int n_arrays = 9;
+    int n_cutoffs = 2;
+    int ARRAY_SIZES[9] = {1000, 5000, 10000, 50000, 100000, 500000, 1000000, 5000000, 10000000};
+    int CUT_OFFS[2] = {0, 100};  // min array size to run parallelism
+
     int size;
     int cutoff;
 
     // output .csv to save experiment runtime results
     FILE *fptr;
-    char file_name[] = "results_dynamic/results.csv";
+    char file_name[] = "results/results_finalcsv";
 
+    double run_start = omp_get_wtime();
     fptr = fopen(file_name, "a");
     if (fptr)
     {  
         // headers
         // fprintf(fptr, "algorithm,construct,threads,size,cutoff,duration\n");
 
-        for (int s = 0; s < 5; s++)
+        for (int s = 0; s < n_arrays; s++)
         {
             size = ARRAY_SIZES[s];
             
@@ -113,7 +122,7 @@ int main(void)
                 printf("\nOpenMP Threads: %d\n", omp_get_max_threads());
 
                 // loop through each hybrid cutoff setting
-                for (int c = 0; c < 3; c++)
+                for (int c = 0; c < n_cutoffs; c++)
                 {
                     cutoff = CUT_OFFS[c];
                     printf("Array Size: %d | ", size);
