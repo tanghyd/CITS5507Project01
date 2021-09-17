@@ -40,7 +40,7 @@ int main(void)
 
     // output .csv to save experiment runtime results
     FILE *fptr;
-    char file_name[] = "results/results_finalcsv";
+    char file_name[] = "results/results.csv";
 
     double run_start = omp_get_wtime();
     fptr = fopen(file_name, "a");

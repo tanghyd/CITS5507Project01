@@ -41,12 +41,9 @@ void quick_sort(double *arr, int low, int high)
         {        
             if (low < high)
             {
-                /* pi is the "partitioning index, where
-                arr[pi] is swapped to correct location*/
                 int pi = partition(arr, low, high);
 
                 // separately sort elements before and after pi
-                // #pragma omp task firstprivate(arr, low, pi)
                 quick_sort(arr, low, pi - 1);
                 quick_sort(arr, pi + 1, high);
             }
@@ -63,12 +60,10 @@ void quick_sort_tasks(double *arr, int low, int high, int cutoff)
         {        
             if (low < high)
             {
-                // pi is the partitioning index, where
-                // arr[pi] is swapped to correct location
                 int pi = partition(arr, low, high);
 
                 // separately sort elements before and after pivot
-                // serial if array bigger than cutoff
+                // worker takes task itself if array bigger than cutoff
                 #pragma omp task shared(arr) firstprivate(low, pi) if (high - low > cutoff)
                 {
                     quick_sort_tasks(arr, low, pi - 1, cutoff);
